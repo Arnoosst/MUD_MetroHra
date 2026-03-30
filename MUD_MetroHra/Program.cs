@@ -1,9 +1,1 @@
-﻿namespace MUD_MetroHra;
-
-class Program
-{
-    static void Main(string[] args)
-    {
-        Console.WriteLine("Hello, World!");
-    }
-}
+﻿namespace MUD_MetroHra;class Program{    static void Main(string[] args)    {        Console.WriteLine("START");        var world = WorldLoader.Load("world.json");        var player = new Player        {            Name = "Test",            CurrentRoom = world.GetRoom("zakladna")        };        while (true)        {            var input = Console.ReadLine();            var output = CommandProcessor.Process(input, player);            Console.WriteLine(output);        }    }}
