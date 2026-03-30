@@ -1,0 +1,24 @@
+﻿{
+  "rooms": [
+    {
+      "id": "zakladna",
+      "name": "Stanice Zakladna",
+      "description": "Bezpecna stanice.",
+      "exits": {
+        "sever": "tunel_a"
+      },
+      "items": [],
+      "npcs": []
+    },
+    {
+      "id": "tunel_a",
+      "name": "Tunel A",
+      "description": "Temny tunel.",
+      "exits": {
+        "jih": "zakladna"
+      },
+      "items": [],
+      "npcs": []
+    }
+  ]
+}
