@@ -2,8 +2,9 @@
 
 class Program
 {
-    static void Main(string[] args)
+    static async Task Main(string[] args)
     {
-        Console.WriteLine("Hello, World!");
+        GameServer server = new GameServer(5000);
+        await server.StartAsync();
     }
 }
