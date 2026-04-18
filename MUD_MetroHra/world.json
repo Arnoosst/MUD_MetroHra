@@ -3,22 +3,95 @@
     {
       "id": "zakladna",
       "name": "Stanice Zakladna",
-      "description": "Bezpecna stanice.",
+      "description": "Bezpecna stanice plna prezivsich.",
       "exits": {
-        "sever": "tunel_a"
+        "sever": "tunel_a",
+        "vychod": "obchodni"
+      },
+      "items": [
+        { "id": "lekarnicka", "name": "lekarnicka" }
+      ],
+      "npcs": [
+        { "name": "strazce", "dialogue": "Drz se svetla. V temnych tunelech se ztraci lide." }
+      ]
+    },
+    {
+      "id": "obchodni",
+      "name": "Stanice Obchodni",
+      "description": "Mala stanice s improvozovanym trhem.",
+      "exits": {
+        "zapad": "zakladna",
+        "sever": "tunel_b"
+      },
+      "items": [
+        { "id": "filtr", "name": "filtr do masky" }
+      ],
+      "npcs": [
+        { "name": "obchodnik", "dialogue": "Slysel jsem, ze karta je nekde v opustene stanici." }
+      ]
+    },
+    {
+      "id": "tunel_a",
+      "name": "Tunel A",
+      "description": "Temny tunel. Ve stenach je slyset podivne zvuky.",
+      "exits": {
+        "jih": "zakladna",
+        "sever": "opustena"
       },
       "items": [],
       "npcs": []
     },
     {
-      "id": "tunel_a",
-      "name": "Tunel A",
-      "description": "Temny tunel.",
+      "id": "tunel_b",
+      "name": "Tunel B",
+      "description": "Dlouhy spojovaci tunel plny prachu.",
       "exits": {
-        "jih": "zakladna"
+        "jih": "obchodni",
+        "sever": "karantena"
       },
       "items": [],
       "npcs": []
+    },
+    {
+      "id": "opustena",
+      "name": "Opustena Stanice",
+      "description": "Rozbita stanice bez svetel. Na zemi lezi cizi veci.",
+      "exits": {
+        "jih": "tunel_a"
+      },
+      "items": [
+        { "id": "karta", "name": "klicova karta" }
+      ],
+      "npcs": [
+        { "name": "prezivsi", "dialogue": "Nasel jsem tu artefakt v karantennim sektoru, ale je to tam nebezpecne." }
+      ]
+    },
+    {
+      "id": "karantena",
+      "name": "Karanteni Sektor",
+      "description": "Uzavrena oblast. Vzduch je tezky a misto pusobi nebezpecne.",
+      "exits": {
+        "jih": "tunel_b",
+        "sever": "posledni"
+      },
+      "items": [
+        { "id": "artefakt", "name": "artefakt" }
+      ],
+      "npcs": [
+        { "name": "mechanik", "dialogue": "Bez artefaktu a karty nema cenu jit dal." }
+      ]
+    },
+    {
+      "id": "posledni",
+      "name": "Posledni Stanice",
+      "description": "Posledni bezpecna stanice. Tady muze tvoje cesta skoncit.",
+      "exits": {
+        "jih": "karantena"
+      },
+      "items": [],
+      "npcs": [
+        { "name": "velitel", "dialogue": "Jestli mas kartu a artefakt, dokazal jsi to." }
+      ]
     }
   ]
 }
