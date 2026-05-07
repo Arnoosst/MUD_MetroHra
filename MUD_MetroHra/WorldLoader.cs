@@ -1,4 +1,4 @@
-﻿namespace MUD_MetroHra;
+namespace MUD_MetroHra;
 
 using System.Text.Json;
 
@@ -11,10 +11,12 @@ public class WorldLoader
 
         var json = File.ReadAllText(path);
 
-        var data = JsonSerializer.Deserialize<WorldData>(json, new JsonSerializerOptions
+        var options = new JsonSerializerOptions
         {
             PropertyNameCaseInsensitive = true
-        });
+        };
+
+        var data = JsonSerializer.Deserialize<WorldData>(json, options);
 
         if (data?.Rooms == null || data.Rooms.Count == 0)
             throw new Exception("World JSON neobsahuje zadne mistnosti.");
@@ -26,6 +28,14 @@ public class WorldLoader
             world.Rooms[room.Id] = room;
         }
 
+        if (data.Quests != null)
+        {
+            foreach (var quest in data.Quests)
+            {
+                world.Quests[quest.Id] = quest;
+            }
+        }
+
         return world;
     }
 }
@@ -33,4 +43,5 @@ public class WorldLoader
 public class WorldData
 {
     public List<Room> Rooms { get; set; } = new();
+    public List<QuestDefinition> Quests { get; set; } = new();
 }

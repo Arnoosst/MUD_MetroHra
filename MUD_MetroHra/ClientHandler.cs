@@ -35,57 +35,11 @@ public class ClientHandler
             using var reader = new StreamReader(stream, Encoding.UTF8);
             using var writer = new StreamWriter(stream, Encoding.UTF8) { AutoFlush = true };
 
-            await writer.WriteLineAsync("Vitej v MUD Metro Hra");
-            await writer.WriteLineAsync("Zadej 'login' nebo 'register':");
-
-            string? mode = await reader.ReadLineAsync();
-            if (mode == null)
+            string? playerNameResult = await HandleLoginAsync(reader, writer);
+            if (playerNameResult == null)
                 return;
 
-            mode = mode.Trim().ToLower();
-
-            if (mode != "login" && mode != "register")
-            {
-                await writer.WriteLineAsync("Neplatna volba.");
-                return;
-            }
-
-            await writer.WriteLineAsync("Zadej uzivatelske jmeno:");
-            string? username = await reader.ReadLineAsync();
-
-            await writer.WriteLineAsync("Zadej heslo:");
-            string? password = await reader.ReadLineAsync();
-
-            if (string.IsNullOrWhiteSpace(username) || string.IsNullOrWhiteSpace(password))
-            {
-                await writer.WriteLineAsync("Neplatne udaje.");
-                return;
-            }
-
-            playerName = username.Trim();
-
-            if (mode == "register")
-            {
-                if (!_accountService.Register(playerName, password))
-                {
-                    await writer.WriteLineAsync("Uzivatel uz existuje.");
-                    return;
-                }
-
-                LoggerService.Info($"Registrace hrace {playerName}");
-                await writer.WriteLineAsync("Ucet vytvoren.");
-            }
-            else
-            {
-                if (!_accountService.Login(playerName, password))
-                {
-                    await writer.WriteLineAsync("Neplatne prihlasovaci udaje.");
-                    return;
-                }
-
-                LoggerService.Info($"Prihlaseni hrace {playerName}");
-                await writer.WriteLineAsync("Prihlaseni uspesne.");
-            }
+            playerName = playerNameResult;
 
             var player = _persistenceService.LoadPlayer(playerName) ?? new Player
             {
@@ -102,7 +56,7 @@ public class ClientHandler
             _server.Sessions[player.Name] = session;
 
             LoggerService.Info($"{player.Name} se pripojil");
-            await writer.WriteLineAsync($"Ahoj {player.Name}");
+            await writer.WriteLineAsync($"Ahoj {player.Name}!");
             await writer.WriteLineAsync("Napis 'pomoc' pro seznam prikazu.");
             await writer.WriteLineAsync("");
             await writer.WriteLineAsync(CommandProcessor.Look(player, _world, _server));
@@ -151,13 +105,82 @@ public class ClientHandler
                     _persistenceService.SavePlayer(session.Player);
                     await _server.BroadcastToRoomAsync(session.Player.CurrentRoomId, $"{session.Player.Name} opustil mistnost.", session.Player.Name);
                 }
-                catch
-                {
-                }
+                catch { }
             }
 
             _client.Close();
             LoggerService.Info($"{playerName} odpojen");
         }
+    }
+
+    private async Task<string?> HandleLoginAsync(StreamReader reader, StreamWriter writer)
+    {
+        await writer.WriteLineAsync("Vitej v MUD Metro Hra!");
+        await writer.WriteLineAsync("==============================");
+
+        // Max 5 pokusu
+        for (int attempt = 0; attempt < 5; attempt++)
+        {
+            await writer.WriteLineAsync("Zadej 'login' nebo 'register':");
+
+            string? mode = await reader.ReadLineAsync();
+            if (mode == null) return null;
+            mode = mode.Trim().ToLower();
+
+            if (mode != "login" && mode != "register")
+            {
+                await writer.WriteLineAsync("Neplatna volba. Zadej 'login' nebo 'register'.");
+                continue;
+            }
+
+            await writer.WriteLineAsync("Uzivatelske jmeno:");
+            string? username = await reader.ReadLineAsync();
+            if (username == null) return null;
+            username = username.Trim();
+
+            if (string.IsNullOrWhiteSpace(username))
+            {
+                await writer.WriteLineAsync("Jmeno nemuze byt prazdne.");
+                continue;
+            }
+
+            await writer.WriteLineAsync("Heslo:");
+            string? password = await reader.ReadLineAsync();
+            if (password == null) return null;
+
+            if (string.IsNullOrWhiteSpace(password))
+            {
+                await writer.WriteLineAsync("Heslo nemuze byt prazdne.");
+                continue;
+            }
+
+            if (mode == "register")
+            {
+                if (!_accountService.Register(username, password))
+                {
+                    await writer.WriteLineAsync("Uzivatel uz existuje. Zkus jine jmeno nebo pouzij 'login'.");
+                    continue;
+                }
+
+                LoggerService.Info($"Registrace hrace {username}");
+                await writer.WriteLineAsync("Ucet uspesne vytvoren!");
+                return username;
+            }
+            else
+            {
+                if (!_accountService.Login(username, password))
+                {
+                    await writer.WriteLineAsync("Spatne jmeno nebo heslo. Zkus to znovu.");
+                    continue;
+                }
+
+                LoggerService.Info($"Prihlaseni hrace {username}");
+                await writer.WriteLineAsync("Prihlaseni uspesne!");
+                return username;
+            }
+        }
+
+        await writer.WriteLineAsync("Prilis mnoho neuspesnych pokusu. Odpojuji.");
+        return null;
     }
 }

@@ -1,4 +1,4 @@
-﻿namespace MUD_MetroHra;
+namespace MUD_MetroHra;
 
 using System.Collections.Concurrent;
 using System.Net;
@@ -54,13 +54,29 @@ public class GameServer
 
         foreach (var session in targets)
         {
-            try
-            {
-                await session.Writer.WriteLineAsync(message);
-            }
-            catch
-            {
-            }
+            try { await session.Writer.WriteLineAsync(message); }
+            catch { }
         }
+    }
+
+    public async Task BroadcastToAllAsync(string message, string? exceptPlayerName = null)
+    {
+        var targets = Sessions.Values
+            .Where(s => exceptPlayerName == null || !s.Player.Name.Equals(exceptPlayerName, StringComparison.OrdinalIgnoreCase))
+            .ToList();
+
+        foreach (var session in targets)
+        {
+            try { await session.Writer.WriteLineAsync(message); }
+            catch { }
+        }
+    }
+
+    public List<Player> GetLeaderboard()
+    {
+        return _persistenceService.GetAllPlayers()
+            .Where(p => p.HasFinishedGame && p.FinishedAt.HasValue)
+            .OrderBy(p => p.FinishedAt)
+            .ToList();
     }
 }

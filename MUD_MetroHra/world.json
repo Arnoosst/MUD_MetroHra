@@ -1,4 +1,4 @@
-﻿{
+{
   "rooms": [
     {
       "id": "zakladna",
@@ -9,25 +9,48 @@
         "vychod": "obchodni"
       },
       "items": [
-        { "id": "lekarnicka", "name": "lekarnicka" }
+        {
+          "id": "lekarnicka",
+          "name": "lekarnicka",
+          "useEffect": {
+            "healAmount": 30,
+            "curesPoison": false,
+            "consumable": true
+          }
+        }
       ],
       "npcs": [
-        { "name": "strazce", "dialogue": "Drz se svetla. V temnych tunelech se ztraci lide." }
+        {
+          "name": "strazce",
+          "dialogue": "Drz se svetla. V temnych tunelech se ztraci lide. Muzes mi pomoci? Donest kartu zpet na zakladnu.",
+          "givesQuestId": "quest_zakladna"
+        }
       ]
     },
     {
       "id": "obchodni",
       "name": "Stanice Obchodni",
-      "description": "Mala stanice s improvozovanym trhem.",
+      "description": "Mala stanice s improvizovanym trhem.",
       "exits": {
         "zapad": "zakladna",
         "sever": "tunel_b"
       },
       "items": [
-        { "id": "filtr", "name": "filtr do masky" }
+        {
+          "id": "filtr",
+          "name": "filtr do masky",
+          "useEffect": {
+            "healAmount": 0,
+            "curesPoison": true,
+            "consumable": true
+          }
+        }
       ],
       "npcs": [
-        { "name": "obchodnik", "dialogue": "Slysel jsem, ze karta je nekde v opustene stanici." }
+        {
+          "name": "obchodnik",
+          "dialogue": "Slysel jsem, ze karta je nekde v opustene stanici. Vezmi si filtr do masky, muze se hodit v karantene."
+        }
       ]
     },
     {
@@ -63,13 +86,17 @@
         { "id": "karta", "name": "klicova karta" }
       ],
       "npcs": [
-        { "name": "prezivsi", "dialogue": "Nasel jsem tu artefakt v karantennim sektoru, ale je to tam nebezpecne." }
+        {
+          "name": "prezivsi",
+          "dialogue": "Nasel jsem tu artefakt v karantennim sektoru, ale je to tam nebezpecne. Vzduch tam otravuje lidi."
+        }
       ]
     },
     {
       "id": "karantena",
       "name": "Karanteni Sektor",
       "description": "Uzavrena oblast. Vzduch je tezky a misto pusobi nebezpecne.",
+      "poisonOnEnter": true,
       "exits": {
         "jih": "tunel_b",
         "sever": "posledni"
@@ -78,20 +105,34 @@
         { "id": "artefakt", "name": "artefakt" }
       ],
       "npcs": [
-        { "name": "mechanik", "dialogue": "Bez artefaktu a karty nema cenu jit dal." }
+        {
+          "name": "mechanik",
+          "dialogue": "Bez artefaktu a karty nema cenu jit dal. A pouzij filtr do masky, at te vzduch nezabije."
+        }
       ]
     },
     {
       "id": "posledni",
       "name": "Posledni Stanice",
       "description": "Posledni bezpecna stanice. Tady muze tvoje cesta skoncit.",
+      "requiredItemId": "karta",
       "exits": {
         "jih": "karantena"
       },
       "items": [],
       "npcs": [
-        { "name": "velitel", "dialogue": "Jestli mas kartu a artefakt, dokazal jsi to." }
+        {
+          "name": "velitel",
+          "dialogue": "Jestli mas kartu a artefakt, dokazal jsi to. Vitej na konci cesty."
+        }
       ]
+    }
+  ],
+  "quests": [
+    {
+      "id": "quest_zakladna",
+      "name": "Ztracena karta",
+      "description": "Strazce te prosil, abys nasel klicovou kartu v opustene stanici a prinej ji zpet na zakladnu."
     }
   ]
 }
